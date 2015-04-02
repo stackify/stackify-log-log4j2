@@ -3,7 +3,7 @@
 
 	<groupId>com.stackify</groupId>
 	<artifactId>stackify-log-log4j2</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	
 	<name>Stackify Log Appender for Log4j 2.x</name>
 	<description>Stackify Log Appender for Log4j 2.x</description>
