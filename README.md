@@ -22,6 +22,7 @@ Add it as a maven dependency:
     <groupId>com.stackify</groupId>
     <artifactId>stackify-log-log4j2</artifactId>
     <version>INSERT_LATEST_MAVEN_CENTRAL_VERSION</version>
+    <scope>runtime</scope>
 </dependency>
 ```
 
