@@ -228,7 +228,7 @@ public class LogEventAdapter implements EventAdapter<LogEvent> {
 	 * @see com.stackify.api.common.log.EventAdapter#isErrorLevel(java.lang.Object)
 	 */
 	@Override
-	public boolean isErrorLevel(LogEvent event) {
-		return (event.getLevel() == Level.ERROR) || (event.getLevel() == Level.FATAL);
+	public boolean isErrorLevel(final LogEvent event) {
+		return event.getLevel().isMoreSpecificThan(Level.ERROR);
 	}
 }
