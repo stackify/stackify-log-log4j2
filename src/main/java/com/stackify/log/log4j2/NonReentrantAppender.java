@@ -76,7 +76,7 @@ public abstract class NonReentrantAppender extends AbstractAppender {
 			guard.set(Boolean.TRUE);
 			subAppend(event);
 		} finally {
-			guard.set(Boolean.FALSE);
+			guard.remove();
 		}	
 	}
 
