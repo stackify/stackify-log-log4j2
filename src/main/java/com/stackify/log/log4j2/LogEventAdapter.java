@@ -231,4 +231,18 @@ public class LogEventAdapter implements EventAdapter<LogEvent> {
 	public boolean isErrorLevel(final LogEvent event) {
 		return event.getLevel().isMoreSpecificThan(Level.ERROR);
 	}
+
+	/**
+	 * @see com.stackify.api.common.log.EventAdapter#getClassName(java.lang.Object)
+	 */
+	@Override
+	public String getClassName(final LogEvent event) {
+		StackTraceElement source = event.getSource();
+
+		if (source != null) {			
+			return source.getClassName();
+		}
+		
+		return null;
+	}
 }

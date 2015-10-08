@@ -294,4 +294,22 @@ public class LogEventAdapterTest {
 		Assert.assertNotNull(error);
 		Assert.assertEquals("StringException", error.getError().getErrorType());
 	}
+	
+	/**
+	 * testGetClassName
+	 */
+	@Test
+	public void testGetClassName() {
+		StackTraceElement source = new StackTraceElement("class", "method", null, 123);
+		
+		LogEvent event = Mockito.mock(LogEvent.class);
+		Mockito.when(event.getSource()).thenReturn(source);
+		
+		LogEventAdapter adapter = new LogEventAdapter(Mockito.mock(EnvironmentDetail.class));
+		
+		String className = adapter.getClassName(event);
+		
+		Assert.assertNotNull(className);
+		Assert.assertEquals("class", className);
+	}
 }
