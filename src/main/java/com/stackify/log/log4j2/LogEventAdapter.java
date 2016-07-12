@@ -15,26 +15,26 @@
  */
 package com.stackify.log.log4j2;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.ThreadContext.ContextStack;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.message.Message;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stackify.api.EnvironmentDetail;
 import com.stackify.api.LogMsg;
 import com.stackify.api.StackifyError;
 import com.stackify.api.WebRequestDetail;
 import com.stackify.api.common.lang.Throwables;
+import com.stackify.api.common.log.APMLogData;
 import com.stackify.api.common.log.EventAdapter;
 import com.stackify.api.common.log.ServletLogContext;
 import com.stackify.api.common.util.Maps;
 import com.stackify.api.common.util.Preconditions;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.ThreadContext.ContextStack;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.message.Message;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * LogEventAdapter
@@ -101,13 +101,13 @@ public class LogEventAdapter implements EventAdapter<LogEvent> {
 			builder.error(Throwables.toErrorItem(getMessage(event), className, methodName, lineNumber));
 		}
 		
-		String user = ServletLogContext.getUser();
+		String user = APMLogData.isLinked() ? APMLogData.getUser() : ServletLogContext.getUser();
 		
 		if (user != null) {
 			builder.userName(user);
 		}
 		
-		WebRequestDetail webRequest = ServletLogContext.getWebRequest();
+		WebRequestDetail webRequest = APMLogData.isLinked() ? APMLogData.getWebRequest() : ServletLogContext.getWebRequest();
 		
 		if (webRequest != null) {
 			builder.webRequestDetail(webRequest);
@@ -143,7 +143,7 @@ public class LogEventAdapter implements EventAdapter<LogEvent> {
 		builder.epochMs(event.getTimeMillis());
 		builder.level(event.getLevel().toString().toLowerCase());
 
-		String transactionId = ServletLogContext.getTransactionId();
+		String transactionId = APMLogData.isLinked() ? APMLogData.getTransactionId() : ServletLogContext.getTransactionId();
 		
 		if (transactionId != null) {
 			builder.transId(transactionId);
