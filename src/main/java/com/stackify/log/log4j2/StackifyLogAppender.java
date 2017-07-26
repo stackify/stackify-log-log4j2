@@ -127,9 +127,9 @@ public class StackifyLogAppender extends NonReentrantAppender {
                                                      @PluginAttribute("apiKey") final String apiKey,
                                                      @PluginAttribute("application") final String application,
                                                      @PluginAttribute("environment") final String environment,
-                                                     @PluginAttribute("maskEnabled") final Boolean maskEnabled,
+                                                     @PluginAttribute("maskEnabled") final String maskEnabled,
                                                      @PluginElement("mask") final Mask[] masks) {
-        return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment, maskEnabled != null ? maskEnabled : true, masks);
+        return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment, maskEnabled == null || Boolean.parseBoolean(maskEnabled), masks);
     }
 
     /**
@@ -185,7 +185,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
 			if (maskEnabled) {
 
 				// set default maks
-				masker.addMask(Masker.MASK_CREDIT_CARD);
+				masker.addMask(Masker.MASK_CREDITCARD);
 				masker.addMask(Masker.MASK_SSN);
 
 				if (masks != null && masks.length > 0) {
