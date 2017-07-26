@@ -51,6 +51,43 @@ Be sure to shutdown Log4j to flush this appender of any errors and shutdown the 
 ((org.apache.logging.log4j.core.LoggerContext) org.apache.logging.log4j.LogManager.getContext(false)).stop();
 ```
 
+## Masking 
+
+The Stackify appender has built-in data masking for credit cards and social security number values.
+
+**Disable Masking:**
+
+Add `<MaskEnabled>false</MaskEnabled>` inside the `<StackifyLog> ... </StackifyLog>` tag.
+
+**Customize Masking:**
+
+The example below has the following customizations: 
+
+1. Credit Card value masking is disabled (`<Mask enabled="false">CREDITCARD</Mask>`)
+2. IP Address masking is enabled (`<Mask enabled="true">IP</Mask>`). Built in masks are `CREDITCARD`, `SSN` and `IP`.
+3. Custom masking to remove vowels using a regex (`<Mask enabled="true">[aeiou]</Mask>`)
+ 
+```xml
+<Configuration packages="com.stackify.log.log4j2">
+    <Appenders>
+        <StackifyLog name="STACKIFY" apiKey="YOUR_API_KEY" application="YOUR_APPLICATION_NAME" environment="YOUR_ENVIRONMENT">
+            <MaskEnabled>true</MaskEnabled>
+            <Mask enabled="false">CREDITCARD</Mask>
+            <Mask enabled="true">SSN</Mask>
+            <Mask enabled="true">IP</Mask>
+            <Mask enabled="true">[aeiou]</Mask>
+        </StackifyLog>
+        ...
+    <Appenders>
+    <Loggers>
+        <Root ...>
+            ...
+            <AppenderRef ref="STACKIFY"/>
+        </Root>
+    </Loggers>
+</Configuration>
+```
+
 ## License
 
 Copyright 2015 Stackify, LLC.

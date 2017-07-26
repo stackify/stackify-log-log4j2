@@ -15,6 +15,12 @@
  */
 package com.stackify.log.log4j2;
 
+import com.stackify.api.common.ApiClients;
+import com.stackify.api.common.ApiConfiguration;
+import com.stackify.api.common.ApiConfigurations;
+import com.stackify.api.common.log.LogAppender;
+import com.stackify.api.common.mask.Masker;
+import lombok.Getter;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
@@ -22,14 +28,12 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
-import com.stackify.api.common.ApiClients;
-import com.stackify.api.common.ApiConfiguration;
-import com.stackify.api.common.ApiConfigurations;
-import com.stackify.api.common.log.LogAppender;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Log4j 2.x logger appender for sending logs to Stackify.
- * 
+ * <p>
  * <p>
  * Example appender configuration (log4j2.xml file):
  * <pre>
@@ -46,13 +50,13 @@ import com.stackify.api.common.log.LogAppender;
  *     </Loggers>
  * </Configuration>
  * </pre>
- *
+ * <p>
  * <p>
  * Be sure to shutdown Log4j to flush this appender of any logs and shutdown the background thread:
  * <pre>
  * ((LoggerContext) LogManager.getContext(false)).stop();
  * </pre>
- 
+ *
  * @author Eric Martin
  */
 @Plugin(name = "StackifyLog", category = "Core", elementType = "appender")
@@ -68,97 +72,95 @@ public class StackifyLogAppender extends NonReentrantAppender {
 	 */
 	private static final String DEFAULT_API_URL = "https://api.stackify.com";
 
-	/**
-	 * API URL (Appender configuration parameter)
-	 */
-	private final String apiUrl;
-	
-	/**
-	 * API Key (Appender configuration parameter)
-	 */
-	private final String apiKey;
-	
-	/**
-	 * Application name (Appender configuration parameter)
-	 */
-	private final String application;
-	
-	/**
-	 * Environment (Appender configuration parameter)
-	 */
-	private final String environment;
-		
-	/**
-	 * Generic log appender
-	 */
-	private LogAppender<LogEvent> logAppender;
-	
-	/**
-	 * Factory method for the appender
-	 * @param name The Appender name
-	 * @param filter The Filter to associate with the Appender
-	 * @param apiUrl API URL
-	 * @param apiKey API Key
-	 * @param application Application name
-	 * @param environment Environment
-	 * @return StackifyLogAppender
-	 */
-	@PluginFactory
-	public static StackifyLogAppender createAppender(@PluginAttribute("name") final String name, 
-			                                         @PluginElement("filters") final Filter filter,
-			                                         @PluginAttribute("apiUrl") final String apiUrl,
-			                                         @PluginAttribute("apiKey") final String apiKey,
-			                                         @PluginAttribute("application") final String application,
-			                                         @PluginAttribute("environment") final String environment) {
-	    return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment);
-	}
-	
+    /**
+     * API URL (Appender configuration parameter)
+     */
+    @Getter
+    private final String apiUrl;
+
+    /**
+     * API Key (Appender configuration parameter)
+     */
+    @Getter
+    private final String apiKey;
+
+    /**
+     * Application name (Appender configuration parameter)
+     */
+    @Getter
+    private final String application;
+
+    /**
+     * Environment (Appender configuration parameter)
+     */
+    @Getter
+    private final String environment;
+
+    @Getter
+    private final boolean maskEnabled;
+
+    @Getter
+    private final Mask[] masks;
+
+    /**
+     * Generic log appender
+     */
+    private LogAppender<LogEvent> logAppender;
+
+    /**
+     * Factory method for the appender
+     *
+     * @param name        The Appender name
+     * @param filter      The Filter to associate with the Appender
+     * @param apiUrl      API URL
+     * @param apiKey      API Key
+     * @param application Application name
+     * @param environment Environment
+     * @param maskEnabled Mask Enabled
+     * @param masks       Masks
+     * @return StackifyLogAppender
+     */
+    @PluginFactory
+    public static StackifyLogAppender createAppender(@PluginAttribute("name") final String name,
+                                                     @PluginElement("filters") final Filter filter,
+                                                     @PluginAttribute("apiUrl") final String apiUrl,
+                                                     @PluginAttribute("apiKey") final String apiKey,
+                                                     @PluginAttribute("application") final String application,
+                                                     @PluginAttribute("environment") final String environment,
+                                                     @PluginAttribute("maskEnabled") final Boolean maskEnabled,
+                                                     @PluginElement("mask") final Mask[] masks) {
+        return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment, maskEnabled != null ? maskEnabled : true, masks);
+    }
+
     /**
      * Constructor.
-	 * @param name The Appender name
-	 * @param filter The Filter to associate with the Appender
-	 * @param apiUrl API URL
-	 * @param apiKey API Key
-	 * @param application Application name
-	 * @param environment Environment
+     *
+     * @param name        The Appender name
+     * @param filter      The Filter to associate with the Appender
+     * @param apiUrl      API URL
+     * @param apiKey      API Key
+     * @param application Application name
+     * @param environment Environment
+     * @param maskEnabled Mask Enabled
+     * @param masks       Masks
      */
-	protected StackifyLogAppender(final String name, final Filter filter, final String apiUrl, final String apiKey, 
-			final String application, final String environment) {
-		super(name, filter, null);
-		
-		this.apiUrl = (apiUrl != null) ? apiUrl : DEFAULT_API_URL;		
-		this.apiKey = apiKey;
-		this.application = application;
-		this.environment = environment;
-	}
+    protected StackifyLogAppender(final String name,
+                                  final Filter filter,
+                                  final String apiUrl,
+                                  final String apiKey,
+                                  final String application,
+                                  final String environment,
+                                  final boolean maskEnabled,
+                                  final Mask[] masks) {
+        super(name, filter, null);
 
-	/**
-	 * @return the apiUrl
-	 */
-	public String getApiUrl() {
-		return apiUrl;
-	}
-
-	/**
-	 * @return the apiKey
-	 */
-	public String getApiKey() {
-		return apiKey;
-	}
-
-	/**
-	 * @return the application
-	 */
-	public String getApplication() {
-		return application;
-	}
-
-	/**
-	 * @return the environment
-	 */
-	public String getEnvironment() {
-		return environment;
-	}
+        this.apiUrl = (apiUrl != null) ? apiUrl : DEFAULT_API_URL;
+        this.apiKey = apiKey;
+        this.application = application;
+        this.environment = environment;
+        this.maskEnabled = maskEnabled;
+        this.masks = masks;
+    }
 
 	/**
 	 * @see org.apache.logging.log4j.core.filter.AbstractFilterable#start()
@@ -168,19 +170,39 @@ public class StackifyLogAppender extends NonReentrantAppender {
 		super.start();
 
 		if (logAppender == null) {
-			
+
 			// build the api config
-			
+
 			ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, apiKey, application, environment);
-			
+
 			// get the client project name with version
-	
+
 			String clientName = ApiClients.getApiClient(StackifyLogAppender.class, "/stackify-log-log4j2.properties", "stackify-log-log4j2");
-	
+
+			// setup masker
+
+			Masker masker = new Masker();;
+			if (maskEnabled) {
+
+				// set default maks
+				masker.addMask(Masker.MASK_CREDIT_CARD);
+				masker.addMask(Masker.MASK_SSN);
+
+				if (masks != null && masks.length > 0) {
+					for (Mask mask : masks) {
+						if (mask.isEnabled()) {
+							masker.addMask(mask.getValue());
+						} else {
+							masker.removeMask(mask.getValue());
+						}
+					}
+				}
+			}
+
 			// build the log appender
-			
+
 			try {
-				this.logAppender = new LogAppender<LogEvent>(clientName, new LogEventAdapter(apiConfig.getEnvDetail()));
+				this.logAppender = new LogAppender<LogEvent>(clientName, new LogEventAdapter(apiConfig.getEnvDetail()), masker);
 				this.logAppender.activate(apiConfig);
 			} catch (Exception e) {
 				error("Exception starting the Stackify_LogBackgroundService", e);
@@ -206,7 +228,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
 	@Override
 	public void stop() {
 		super.stop();
-		
+
 		try {
 			this.logAppender.close();
 		} catch (Exception e) {
