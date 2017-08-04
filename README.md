@@ -55,9 +55,9 @@ Be sure to shutdown Log4j to flush this appender of any errors and shutdown the 
 
 The Stackify appender has built-in data masking for credit cards and social security number values.
 
-**Disable Masking:**
+**Enable Masking:**
 
-Add `<MaskEnabled>false</MaskEnabled>` inside the `<StackifyLog> ... </StackifyLog>` tag.
+Add `<MaskEnabled>true</MaskEnabled>` inside the `<StackifyLog> ... </StackifyLog>` tag.
 
 **Customize Masking:**
 

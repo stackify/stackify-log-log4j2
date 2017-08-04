@@ -30,7 +30,7 @@ public class Mask extends AbstractLifeCycle {
     @PluginFactory
     public static Mask create(@PluginValue("value") final String value,
                               @PluginAttribute("enabled") final String enabled) {
-        return new Mask(value, enabled == null || Boolean.parseBoolean(enabled));
+        return new Mask(value, enabled != null && Boolean.parseBoolean(enabled));
     }
 
     public Mask(final String value,
