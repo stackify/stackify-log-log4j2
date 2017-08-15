@@ -72,13 +72,24 @@ public class StackifyLogAppender extends NonReentrantAppender {
 	 */
 	private static final String DEFAULT_API_URL = "https://api.stackify.com";
 
-    /**
+	/**
+	 * AUTH API URL (Appender configuration parameter)
+	 */
+	private static final String DEFAULT_AUTH_URL = "https://auth.stackify.net";
+
+	/**
      * API URL (Appender configuration parameter)
      */
     @Getter
     private final String apiUrl;
 
-    /**
+	/**
+	 * Auth API URL
+	 */
+	@Getter
+	private String authUrl = "https://auth.stackify.net";
+
+	/**
      * API Key (Appender configuration parameter)
      */
     @Getter
@@ -113,6 +124,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param name        The Appender name
      * @param filter      The Filter to associate with the Appender
      * @param apiUrl      API URL
+	 * @param authUrl	  API Auth URL
      * @param apiKey      API Key
      * @param application Application name
      * @param environment Environment
@@ -124,12 +136,13 @@ public class StackifyLogAppender extends NonReentrantAppender {
     public static StackifyLogAppender createAppender(@PluginAttribute("name") final String name,
                                                      @PluginElement("filters") final Filter filter,
                                                      @PluginAttribute("apiUrl") final String apiUrl,
+													 @PluginAttribute("authUrl") final String authUrl,
                                                      @PluginAttribute("apiKey") final String apiKey,
                                                      @PluginAttribute("application") final String application,
                                                      @PluginAttribute("environment") final String environment,
                                                      @PluginAttribute("maskEnabled") final String maskEnabled,
                                                      @PluginElement("mask") final Mask[] masks) {
-        return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment, maskEnabled == null || Boolean.parseBoolean(maskEnabled), masks);
+        return new StackifyLogAppender(name, filter, apiUrl, authUrl, apiKey, application, environment, maskEnabled == null || Boolean.parseBoolean(maskEnabled), masks);
     }
 
     /**
@@ -138,6 +151,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param name        The Appender name
      * @param filter      The Filter to associate with the Appender
      * @param apiUrl      API URL
+	 * @param authUrl     API Auth URL
      * @param apiKey      API Key
      * @param application Application name
      * @param environment Environment
@@ -147,6 +161,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
     protected StackifyLogAppender(final String name,
                                   final Filter filter,
                                   final String apiUrl,
+                                  final String authUrl,
                                   final String apiKey,
                                   final String application,
                                   final String environment,
@@ -155,7 +170,8 @@ public class StackifyLogAppender extends NonReentrantAppender {
         super(name, filter, null);
 
         this.apiUrl = (apiUrl != null) ? apiUrl : DEFAULT_API_URL;
-        this.apiKey = apiKey;
+		this.authUrl = (authUrl != null) ? authUrl : DEFAULT_AUTH_URL;
+		this.apiKey = apiKey;
         this.application = application;
         this.environment = environment;
         this.maskEnabled = maskEnabled;
@@ -173,7 +189,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
 
 			// build the api config
 
-			ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, apiKey, application, environment);
+			ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, authUrl, apiKey, application, environment);
 
 			// get the client project name with version
 

@@ -45,17 +45,19 @@ public class StackifyLogAppenderTest {
 		String name = "STACKIFY";
 		Filter filter = Mockito.mock(Filter.class);
 		String apiUrl = "url";
+		String authUrl = "authUrl";
 		String apiKey = "key";
 		String application = "app";
 		String environment = "env";
 		
-		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, filter, apiUrl, apiKey, application, environment, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, filter, apiUrl, authUrl, apiKey, application, environment, null, null);
 		
 		Assert.assertNotNull(appender);
 		
 		Assert.assertEquals(name, appender.getName());
 		Assert.assertEquals(filter, appender.getFilter());
 		Assert.assertEquals(apiUrl, appender.getApiUrl());
+		Assert.assertEquals(authUrl, appender.getAuthUrl());
 		Assert.assertEquals(apiKey, appender.getApiKey());
 		Assert.assertEquals(application, appender.getApplication());
 		Assert.assertEquals(environment, appender.getEnvironment());
@@ -70,13 +72,14 @@ public class StackifyLogAppenderTest {
 		String apiKey = "key";
 		String application = "app";
 		
-		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, null, null, apiKey, application, null, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, null, null, null, apiKey, application, null, null, null);
 		
 		Assert.assertNotNull(appender);
 		
 		Assert.assertEquals(name, appender.getName());
 		Assert.assertNull(appender.getFilter());
 		Assert.assertEquals("https://api.stackify.com", appender.getApiUrl());
+		Assert.assertEquals("https://auth.stackify.net", appender.getAuthUrl());
 		Assert.assertEquals(apiKey, appender.getApiKey());
 		Assert.assertEquals(application, appender.getApplication());
 		Assert.assertNull(appender.getEnvironment());
@@ -88,7 +91,7 @@ public class StackifyLogAppenderTest {
 	 */
 	@Test
 	public void testStartAppendStop() throws Exception {
-		StackifyLogAppender appender = StackifyLogAppender.createAppender("STACKIFY", null, null, "key", "app", null, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender("STACKIFY", null, null, null,"key", "app", null, null, null);
 
 		LogAppender<LogEvent> logAppender = Mockito.mock(LogAppender.class);
 		PowerMockito.whenNew(LogAppender.class).withAnyArguments().thenReturn(logAppender);
