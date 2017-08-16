@@ -78,7 +78,7 @@ The example below has the following customizations:
             <Mask enabled="true">[aeiou]</Mask>
         </StackifyLog>
         ...
-    <Appenders>
+    </Appenders>
     <Loggers>
         <Root ...>
             ...
