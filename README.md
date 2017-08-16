@@ -34,7 +34,7 @@ Example configuration:
     <Appenders>
         <StackifyLog name="STACKIFY" apiKey="YOUR_API_KEY" application="YOUR_APPLICATION_NAME" environment="YOUR_ENVIRONMENT"/>
         ...
-    <Appenders>
+    </Appenders>
     <Loggers>
         <Root ...>
             ...
