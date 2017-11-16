@@ -49,7 +49,7 @@ public class StackifyLogAppenderTest {
 		String application = "app";
 		String environment = "env";
 		
-		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, filter, apiUrl, apiKey, application, environment, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, filter, apiUrl, apiKey, application, environment, null, null, null);
 		
 		Assert.assertNotNull(appender);
 		
@@ -70,7 +70,7 @@ public class StackifyLogAppenderTest {
 		String apiKey = "key";
 		String application = "app";
 		
-		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, null, null, apiKey, application, null, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, null, null, apiKey, application, null, null, null,null);
 		
 		Assert.assertNotNull(appender);
 		
@@ -88,7 +88,7 @@ public class StackifyLogAppenderTest {
 	 */
 	@Test
 	public void testStartAppendStop() throws Exception {
-		StackifyLogAppender appender = StackifyLogAppender.createAppender("STACKIFY", null, null, "key", "app", null, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender("STACKIFY", null, null, "key", "app", null, null, null, null);
 
 		LogAppender<LogEvent> logAppender = Mockito.mock(LogAppender.class);
 		PowerMockito.whenNew(LogAppender.class).withAnyArguments().thenReturn(logAppender);
