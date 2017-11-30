@@ -97,6 +97,9 @@ public class StackifyLogAppender extends NonReentrantAppender {
     private final String environment;
 
     @Getter
+	private final boolean skipJson;
+
+	@Getter
     private final boolean maskEnabled;
 
     @Getter
@@ -116,6 +119,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param apiKey      API Key
      * @param application Application name
      * @param environment Environment
+	 * @param skipJson	  Mark messages w/ JSON w/ #SKIPJSON
      * @param maskEnabled Mask Enabled
      * @param masks       Masks
      * @return StackifyLogAppender
@@ -127,10 +131,14 @@ public class StackifyLogAppender extends NonReentrantAppender {
                                                      @PluginAttribute("apiKey") final String apiKey,
                                                      @PluginAttribute("application") final String application,
                                                      @PluginAttribute("environment") final String environment,
+                                                     @PluginAttribute("skipJson") final String skipJson,
                                                      @PluginAttribute("maskEnabled") final String maskEnabled,
                                                      @PluginElement("mask") final Mask[] masks) {
-        return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment, maskEnabled == null || Boolean.parseBoolean(maskEnabled), masks);
-    }
+		return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment,
+				skipJson == null || Boolean.parseBoolean(skipJson),
+				maskEnabled == null || Boolean.parseBoolean(maskEnabled),
+				masks);
+	}
 
     /**
      * Constructor.
@@ -141,6 +149,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param apiKey      API Key
      * @param application Application name
      * @param environment Environment
+	 * @param skipJson 	  Mark messages w/ JSON w/ #SKIPJSON
      * @param maskEnabled Mask Enabled
      * @param masks       Masks
      */
@@ -150,6 +159,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
                                   final String apiKey,
                                   final String application,
                                   final String environment,
+                                  final boolean skipJson,
                                   final boolean maskEnabled,
                                   final Mask[] masks) {
         super(name, filter, null);
@@ -158,6 +168,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
         this.apiKey = apiKey;
         this.application = application;
         this.environment = environment;
+        this.skipJson = skipJson;
         this.maskEnabled = maskEnabled;
         this.masks = masks;
     }
@@ -202,7 +213,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
 			// build the log appender
 
 			try {
-				this.logAppender = new LogAppender<LogEvent>(clientName, new LogEventAdapter(apiConfig.getEnvDetail()), masker);
+				this.logAppender = new LogAppender<LogEvent>(clientName, new LogEventAdapter(apiConfig.getEnvDetail()), masker, skipJson);
 				this.logAppender.activate(apiConfig);
 			} catch (Exception e) {
 				error("Exception starting the Stackify_LogBackgroundService", e);
