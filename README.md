@@ -8,7 +8,7 @@ Log4j 2.x appender for sending log messages and exceptions to Stackify.
 
 Errors and Logs Overview:
 
-http://support.stackify.com/hc/en-us/articles/205419435-Errors-and-Logs-Overview
+http://support.stackify.com/errors-and-logs-overview/
 
 Sign Up for a Trial:
 
