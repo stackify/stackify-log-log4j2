@@ -28,9 +28,6 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Log4j 2.x logger appender for sending logs to Stackify.
  * <p>
@@ -62,15 +59,15 @@ import java.util.List;
 @Plugin(name = "StackifyLog", category = "Core", elementType = "appender")
 public class StackifyLogAppender extends NonReentrantAppender {
 
-	/**
-	 * Serial version UID
-	 */
-	private static final long serialVersionUID = -6565668877549998441L;
+    /**
+     * Serial version UID
+     */
+    private static final long serialVersionUID = -6565668877549998441L;
 
-	/**
-	 * API URL (Appender configuration parameter)
-	 */
-	private static final String DEFAULT_API_URL = "https://api.stackify.com";
+    /**
+     * API URL (Appender configuration parameter)
+     */
+    private static final String DEFAULT_API_URL = "https://api.stackify.com";
 
     /**
      * API URL (Appender configuration parameter)
@@ -97,9 +94,9 @@ public class StackifyLogAppender extends NonReentrantAppender {
     private final String environment;
 
     @Getter
-	private final boolean skipJson;
+    private final boolean skipJson;
 
-	@Getter
+    @Getter
     private final boolean maskEnabled;
 
     @Getter
@@ -119,7 +116,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param apiKey      API Key
      * @param application Application name
      * @param environment Environment
-	 * @param skipJson	  Mark messages w/ JSON w/ #SKIPJSON
+     * @param skipJson    Mark messages w/ JSON w/ #SKIPJSON
      * @param maskEnabled Mask Enabled
      * @param masks       Masks
      * @return StackifyLogAppender
@@ -134,11 +131,16 @@ public class StackifyLogAppender extends NonReentrantAppender {
                                                      @PluginAttribute("skipJson") final String skipJson,
                                                      @PluginAttribute("maskEnabled") final String maskEnabled,
                                                      @PluginElement("mask") final Mask[] masks) {
-		return new StackifyLogAppender(name, filter, apiUrl, apiKey, application, environment,
-				skipJson == null || Boolean.parseBoolean(skipJson),
-				maskEnabled == null || Boolean.parseBoolean(maskEnabled),
-				masks);
-	}
+        return new StackifyLogAppender(name,
+                filter,
+                apiUrl,
+                apiKey,
+                application,
+                environment,
+                Boolean.parseBoolean(skipJson),
+                Boolean.parseBoolean(maskEnabled),
+                masks);
+    }
 
     /**
      * Constructor.
@@ -149,7 +151,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param apiKey      API Key
      * @param application Application name
      * @param environment Environment
-	 * @param skipJson 	  Mark messages w/ JSON w/ #SKIPJSON
+     * @param skipJson    Mark messages w/ JSON w/ #SKIPJSON
      * @param maskEnabled Mask Enabled
      * @param masks       Masks
      */
@@ -173,77 +175,78 @@ public class StackifyLogAppender extends NonReentrantAppender {
         this.masks = masks;
     }
 
-	/**
-	 * @see org.apache.logging.log4j.core.filter.AbstractFilterable#start()
-	 */
-	@Override
-	public void start() {
-		super.start();
+    /**
+     * @see org.apache.logging.log4j.core.filter.AbstractFilterable#start()
+     */
+    @Override
+    public void start() {
+        super.start();
 
-		if (logAppender == null) {
+        if (logAppender == null) {
 
-			// build the api config
+            // build the api config
 
-			ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, apiKey, application, environment);
+            ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, apiKey, application, environment);
 
-			// get the client project name with version
+            // get the client project name with version
 
-			String clientName = ApiClients.getApiClient(StackifyLogAppender.class, "/stackify-log-log4j2.properties", "stackify-log-log4j2");
+            String clientName = ApiClients.getApiClient(StackifyLogAppender.class, "/stackify-log-log4j2.properties", "stackify-log-log4j2");
 
-			// setup masker
+            // setup masker
 
-			Masker masker = new Masker();;
-			if (maskEnabled) {
+            Masker masker = new Masker();
+            ;
+            if (maskEnabled) {
 
-				// set default maks
-				masker.addMask(Masker.MASK_CREDITCARD);
-				masker.addMask(Masker.MASK_SSN);
+                // set default maks
+                masker.addMask(Masker.MASK_CREDITCARD);
+                masker.addMask(Masker.MASK_SSN);
 
-				if (masks != null && masks.length > 0) {
-					for (Mask mask : masks) {
-						if (mask.isEnabled()) {
-							masker.addMask(mask.getValue());
-						} else {
-							masker.removeMask(mask.getValue());
-						}
-					}
-				}
-			}
+                if (masks != null && masks.length > 0) {
+                    for (Mask mask : masks) {
+                        if (mask.isEnabled()) {
+                            masker.addMask(mask.getValue());
+                        } else {
+                            masker.removeMask(mask.getValue());
+                        }
+                    }
+                }
+            }
 
-			// build the log appender
+            // build the log appender
 
-			try {
-				this.logAppender = new LogAppender<LogEvent>(clientName, new LogEventAdapter(apiConfig.getEnvDetail()), masker, skipJson);
-				this.logAppender.activate(apiConfig);
-			} catch (Exception e) {
-				error("Exception starting the Stackify_LogBackgroundService", e);
-			}
-		}
-	}
+            try {
+                this.logAppender = new LogAppender<LogEvent>(clientName, new LogEventAdapter(apiConfig.getEnvDetail()), masker, skipJson);
+                this.logAppender.activate(apiConfig);
+            } catch (Exception e) {
+                error("Exception starting the Stackify_LogBackgroundService", e);
+            }
+        }
+    }
 
-	/**
-	 * @see com.stackify.log.log4j2.NonReentrantAppender#subAppend(org.apache.logging.log4j.core.LogEvent)
-	 */
-	@Override
-	protected void subAppend(final LogEvent event) {
-		try {
-			this.logAppender.append(event);
-		} catch (Exception e) {
-			error("Exception appending event to Stackify Log Appender", event, e);
-		}
-	}
+    /**
+     * @see com.stackify.log.log4j2.NonReentrantAppender#subAppend(org.apache.logging.log4j.core.LogEvent)
+     */
+    @Override
+    protected void subAppend(final LogEvent event) {
+        try {
+            this.logAppender.append(event);
+        } catch (Exception e) {
+            error("Exception appending event to Stackify Log Appender", event, e);
+        }
+    }
 
-	/**
-	 * @see org.apache.logging.log4j.core.filter.AbstractFilterable#stop()
-	 */
-	@Override
-	public void stop() {
-		super.stop();
+    /**
+     * @see org.apache.logging.log4j.core.filter.AbstractFilterable#stop()
+     */
+    @Override
+    public void stop() {
+        super.stop();
 
-		try {
-			this.logAppender.close();
-		} catch (Exception e) {
-			error("Exception closing Stackify Log Appender", e);
-		}
-	}
+        try {
+            this.logAppender.close();
+        } catch (Exception e) {
+            error("Exception closing Stackify Log Appender", e);
+        }
+    }
 }
