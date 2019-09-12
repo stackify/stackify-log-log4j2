@@ -36,7 +36,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({StackifyLogAppender.class})
 @PowerMockIgnore( {"javax.management.*"})
 public class StackifyLogAppenderTest {
-	
+
 	/**
 	 * testConstructor
 	 */
@@ -48,11 +48,11 @@ public class StackifyLogAppenderTest {
 		String apiKey = "key";
 		String application = "app";
 		String environment = "env";
-		
-		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, filter, apiUrl, apiKey, application, environment, null, null, null);
-		
+
+		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, filter, apiUrl, apiKey, application, environment, null, null, null, null);
+
 		Assert.assertNotNull(appender);
-		
+
 		Assert.assertEquals(name, appender.getName());
 		Assert.assertEquals(filter, appender.getFilter());
 		Assert.assertEquals(apiUrl, appender.getApiUrl());
@@ -60,7 +60,7 @@ public class StackifyLogAppenderTest {
 		Assert.assertEquals(application, appender.getApplication());
 		Assert.assertEquals(environment, appender.getEnvironment());
 	}
-	
+
 	/**
 	 * testConstructorDefault
 	 */
@@ -69,11 +69,11 @@ public class StackifyLogAppenderTest {
 		String name = "STACKIFY";
 		String apiKey = "key";
 		String application = "app";
-		
-		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, null, null, apiKey, application, null, null, null,null);
-		
+
+		StackifyLogAppender appender = StackifyLogAppender.createAppender(name, null, null, apiKey, application, null, null, null,null, null);
+
 		Assert.assertNotNull(appender);
-		
+
 		Assert.assertEquals(name, appender.getName());
 		Assert.assertNull(appender.getFilter());
 		Assert.assertEquals("https://api.stackify.com", appender.getApiUrl());
@@ -81,29 +81,29 @@ public class StackifyLogAppenderTest {
 		Assert.assertEquals(application, appender.getApplication());
 		Assert.assertNull(appender.getEnvironment());
 	}
-	
+
 	/**
 	 * testStartAppendStop
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@Test
 	public void testStartAppendStop() throws Exception {
-		StackifyLogAppender appender = StackifyLogAppender.createAppender("STACKIFY", null, null, "key", "app", null, null, null, null);
+		StackifyLogAppender appender = StackifyLogAppender.createAppender("STACKIFY", null, null, "key", "app", null, null, null, null, null);
 
 		LogAppender<LogEvent> logAppender = Mockito.mock(LogAppender.class);
 		PowerMockito.whenNew(LogAppender.class).withAnyArguments().thenReturn(logAppender);
 
 		appender.start();
-		
+
 		Mockito.verify(logAppender).activate(Mockito.any(ApiConfiguration.class));
-		
+
 		LogEvent event = Mockito.mock(LogEvent.class);
 		appender.subAppend(event);
-		
+
 		Mockito.verify(logAppender).append(event);
 
 		appender.stop();
-		
+
 		Mockito.verify(logAppender).close();
 	}
 }

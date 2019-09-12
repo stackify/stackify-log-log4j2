@@ -102,6 +102,9 @@ public class StackifyLogAppender extends NonReentrantAppender {
     @Getter
     private final Mask[] masks;
 
+    @Getter
+    private final String transport;
+
     /**
      * Generic log appender
      */
@@ -119,6 +122,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param skipJson    Mark messages w/ JSON w/ #SKIPJSON
      * @param maskEnabled Mask Enabled
      * @param masks       Masks
+     * @param transport   (direct, agent_socket)
      * @return StackifyLogAppender
      */
     @PluginFactory
@@ -130,7 +134,8 @@ public class StackifyLogAppender extends NonReentrantAppender {
                                                      @PluginAttribute("environment") final String environment,
                                                      @PluginAttribute("skipJson") final String skipJson,
                                                      @PluginAttribute("maskEnabled") final String maskEnabled,
-                                                     @PluginElement("mask") final Mask[] masks) {
+                                                     @PluginElement("mask") final Mask[] masks,
+                                                     @PluginAttribute("transport") final String transport) {
         return new StackifyLogAppender(name,
                 filter,
                 apiUrl,
@@ -139,7 +144,8 @@ public class StackifyLogAppender extends NonReentrantAppender {
                 environment,
                 Boolean.parseBoolean(skipJson),
                 Boolean.parseBoolean(maskEnabled),
-                masks);
+                masks,
+                transport);
     }
 
     /**
@@ -154,6 +160,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * @param skipJson    Mark messages w/ JSON w/ #SKIPJSON
      * @param maskEnabled Mask Enabled
      * @param masks       Masks
+     * @param transport   (direct, agent_socket)
      */
     protected StackifyLogAppender(final String name,
                                   final Filter filter,
@@ -163,7 +170,8 @@ public class StackifyLogAppender extends NonReentrantAppender {
                                   final String environment,
                                   final boolean skipJson,
                                   final boolean maskEnabled,
-                                  final Mask[] masks) {
+                                  final Mask[] masks,
+                                  final String transport) {
         super(name, filter, null);
 
         this.apiUrl = (apiUrl != null) ? apiUrl : DEFAULT_API_URL;
@@ -173,6 +181,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
         this.skipJson = skipJson;
         this.maskEnabled = maskEnabled;
         this.masks = masks;
+        this.transport = transport;
     }
 
     /**
@@ -186,7 +195,7 @@ public class StackifyLogAppender extends NonReentrantAppender {
 
             // build the api config
 
-            ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, apiKey, application, environment);
+            ApiConfiguration apiConfig = ApiConfigurations.fromPropertiesWithOverrides(apiUrl, apiKey, application, environment, transport, "false");
 
             // get the client project name with version
 

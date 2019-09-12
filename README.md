@@ -1,18 +1,12 @@
-# stackify-log-log4j2
-
+ 
 [![Maven Central](https://img.shields.io/maven-central/v/com.stackify/stackify-log-log4j2.svg)](http://mvnrepository.com/artifact/com.stackify/stackify-log-log4j2)
-[![Build Status](https://travis-ci.org/stackify/stackify-log-log4j2.png)](https://travis-ci.org/stackify/stackify-log-log4j2)
-[![Coverage Status](https://coveralls.io/repos/stackify/stackify-log-log4j2/badge.png?branch=master)](https://coveralls.io/r/stackify/stackify-log-log4j2?branch=master)
+
+## Stackify Log4j2 Logger
 
 Log4j 2.x appender for sending log messages and exceptions to Stackify.
 
-Errors and Logs Overview:
-
-http://support.stackify.com/errors-and-logs-overview/
-
-Sign Up for a Trial:
-
-http://www.stackify.com/sign-up/
+* **Errors and Logs Overview:** http://support.stackify.com/errors-and-logs-overview/
+* **Sign Up for a Trial:** http://www.stackify.com/sign-up/
 
 ## Installation
 
@@ -21,7 +15,7 @@ Add it as a maven dependency:
 <dependency>
     <groupId>com.stackify</groupId>
     <artifactId>stackify-log-log4j2</artifactId>
-    <version>INSERT_LATEST_MAVEN_CENTRAL_VERSION</version>
+    <version>4.0.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
@@ -88,9 +82,20 @@ The example below has the following customizations:
 </Configuration>
 ```
 
+## Legacy Support 
+
+For legacy support of **Java 1.6 and 1.7** use the following maven dependency: 
+```
+<dependency>
+    <groupId>com.stackify</groupId>
+    <artifactId>stackify-log-log4j2</artifactId>
+    <version>2.1.2</version>
+</dependency>
+```
+
 ## License
 
-Copyright 2015 Stackify, LLC.
+Copyright 2019 Stackify, LLC.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
