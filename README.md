@@ -15,7 +15,7 @@ Add it as a maven dependency:
 <dependency>
     <groupId>com.stackify</groupId>
     <artifactId>stackify-log-log4j2</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <scope>runtime</scope>
 </dependency>
 ```
@@ -95,7 +95,7 @@ For legacy support of **Java 1.6 and 1.7** use the following maven dependency:
 
 ## License
 
-Copyright 2019 Stackify, LLC.
+Copyright 2020 Stackify, LLC.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
