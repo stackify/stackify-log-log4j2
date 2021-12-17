@@ -15,7 +15,7 @@ Add it as a maven dependency:
 <dependency>
     <groupId>com.stackify</groupId>
     <artifactId>stackify-log-log4j2</artifactId>
-    <version>4.0.2</version>
+    <version>4.0.3</version>
     <scope>runtime</scope>
 </dependency>
 ```
