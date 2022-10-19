@@ -31,7 +31,6 @@ import org.apache.logging.log4j.ThreadContext.ContextStack;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.message.Message;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -77,7 +76,7 @@ public class LogEventAdapter implements EventAdapter<LogEvent> {
 		
 		StackifyError.Builder builder = StackifyError.newBuilder();
 		builder.environmentDetail(envDetail);		
-		builder.occurredEpochMillis(new Date(event.getTimeMillis()));
+		builder.occurredEpochMillis(event.getTimeMillis());
 		
 		if (exception != null) {
 			builder.error(Throwables.toErrorItem(getMessage(event), exception));
