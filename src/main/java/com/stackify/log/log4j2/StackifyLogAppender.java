@@ -27,6 +27,8 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Log4j 2.x logger appender for sending logs to Stackify.
@@ -109,6 +111,11 @@ public class StackifyLogAppender extends NonReentrantAppender {
      * Generic log appender
      */
     private LogAppender<LogEvent> logAppender;
+
+    /**
+	 * The logger
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(StackifyLogAppender.class);
 
     /**
      * Factory method for the appender
@@ -239,6 +246,9 @@ public class StackifyLogAppender extends NonReentrantAppender {
     @Override
     protected void subAppend(final LogEvent event) {
         try {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("#Log #Appender Logging message: {}", event);
+            }
             this.logAppender.append(event);
         } catch (Exception e) {
             error("Exception appending event to Stackify Log Appender", event, e);
